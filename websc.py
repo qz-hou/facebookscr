@@ -86,6 +86,10 @@ chrome_options.add_experimental_option("prefs",prefs)
 
 driver = webdriver.Chrome('/Users/qianzihou/Downloads/chromedriver', chrome_options=chrome_options)
 
+
+keywords = ["Latino Drug dealers", 
+            "Latino Invasion"]
+
 driver.get("http://www.facebook.com")
 
 username = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']")))
@@ -99,101 +103,139 @@ password.send_keys("Air20010423")
 # log in
 button = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
 
-
-
 #wait 5 seconds to allow your new page to load
 time.sleep(5)
-images = [] 
 
-search = driver.find_element(By.XPATH, "//input[@aria-label='Search Facebook']")
-search.send_keys("Illegal alien Latino")
-search.send_keys(Keys.RETURN)
+for keyword in keywords:
+    k_word = keyword.split(" ")
+    for word in k_word:
+        word = word.lower()
 
-time.sleep(2)
+    driver.get("http://www.facebook.com")
+    search = driver.find_element(By.XPATH, "//input[@aria-label='Search Facebook']")
+    search.send_keys(keyword)
+    search.send_keys(Keys.RETURN)
 
-search = driver.find_element(By.XPATH, '//span[text()="Posts"]').click()
-time.sleep(5)
-rec = driver.find_element(By.XPATH, "//input[@aria-label='Recent Posts']").click()
+    time.sleep(2)
 
-now = driver.current_url
-print("now", now)
-
-# # posts = get_posts(post_urls=now)
-
-# print([now])
-
-# for post in get_posts('nintendo', pages=1):
-#     print(post['post_url'])
-
-mobile = now[:8] + "m." + now[12:]
-print("mobv", mobile)
-driver.get(mobile)
-
-
-count = 0
-switch = True
-old_numReviews = 0
-specifiedNumber = 3 # number of reviews to get
-url = []
-
-while switch:
-    count += 1
-
-    # openSeeMore(driver)
-
-    # wait = WebDriverWait(driver, 10)
-    # element = wait.until(EC.element_to_be_clickable((By.XPATH, '//span[@class="rrjlc0n4 jwegzro5 jyk7a11d om3e55n1 szd3m19j htg95q9y"]'))).click()
-
-    result = []
-    links_l = []
-
-    links = driver.find_elements(By.XPATH, '//a[@class="_26yo"]')
-    texts = [el.text for el in driver.find_elements(By.XPATH, '//div[@class="_5rgt _5nk5 _5msi"]/div/span/span/p')]
-    names = [el.text for el in driver.find_elements(By.XPATH, '//h3[@class="_52jd _52jb _52jh _5qc3 _4vc- _3rc4 _4vc-"]/span/strong/a')]
-    
-
-    for pos in texts:
-        pos = pos.replace("\n", " ")
-        # pos = pos.text
-        pos = pos[:30]
-
-    print(links)
-    print(texts)
-  
-    for i in links:
-        try:
-            ActionChains(driver).move_to_element(i).perform()
-            url = i.get_attribute('href')
-            if url in links_l:
-                continue
-            else:
-                links_l.append(url)
-        except:
-            pass
-
-    print(links_l)
-
-    # scroll to the bottom
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    search = driver.find_element(By.XPATH, '//span[text()="Posts"]').click()
     time.sleep(5)
+    # rec = driver.find_element(By.XPATH, "//input[@aria-label='Recent Posts']").click()
+    last_2 = driver.find_element(By.XPATH, '//div[@class="aglvbi8b b7mnygb8 iec8yc8l"]').click()
+    time.sleep(1)
+    cont = driver.find_element(By.XPATH, '(//div[@class="i85zmo3j alzwoclg jl2a5g8c cgu29s5g sl27f92c aeinzg81"])[3]').click()
 
-    # reviewList = driver.find_elements(By.XPATH, "//div[@class='du4w35lb k4urcfbm l9j0dhe7 sjgh65i0']")
+
+    now = driver.current_url
+    print("now", now)
+
+    # # posts = get_posts(post_urls=now)
+
+    # print([now])
+
+    # for post in get_posts('nintendo', pages=1):
+    #     print(post['post_url'])
+
+    mobile = now[:8] + "m." + now[12:]
+    print("mobv", mobile)
+    driver.get(mobile)
+
+
+    count = 0
+    switch = True
+    old_numReviews = 0
+    specifiedNumber = 8 # number of reviews to get
+    url = []
+
+    while switch:
+        count += 1
+
+        # openSeeMore(driver)
+
+        # wait = WebDriverWait(driver, 10)
+        # element = wait.until(EC.element_to_be_clickable((By.XPATH, '//span[@class="rrjlc0n4 jwegzro5 jyk7a11d om3e55n1 szd3m19j htg95q9y"]'))).click()
+
+        result = []
+        dates = []
+
+        dates = [el.text for el in driver.find_elements(By.XPATH, '//div[@class="_52jc _5qc4 _78cz _24u0 _36xo"]/a[@class="_26yo"]')]
+        links_l = [el.get_attribute('href') for el in driver.find_elements(By.XPATH, '//div[@class="_52jc _5qc4 _78cz _24u0 _36xo"]/a[@class="_26yo"]')]
+        # links = driver.find_elements(By.XPATH, '//div[@class="_52jc _5qc4 _78cz _24u0 _36xo"]/a[@class="_26yo"]')
+        texts = [el.text for el in driver.find_elements(By.XPATH, '//div[@class="story_body_container"]/div/div/span/span[@data-sigil="more"]')]
+        names = [el.text for el in driver.find_elements(By.XPATH, '//div[@class="_4g34"]/h3')]
+        
+
+        # for i in range(len(texts)-1):
+        #     texts[i] = texts[i].replace("\n", " ")
+        #     # pos = pos.text
+        #     texts[i] = texts[i][:20]
+
+        actualPosts = driver.find_elements(By.XPATH, '//div[@class="story_body_container"]/div[@class="_5rgt _5nk5 _5msi"]')
+        texts = []
+        if actualPosts:
+            for posts in actualPosts:
+                text = ""
+                ActionChains(driver).move_to_element(posts).perform()
+                paragraphs = posts.text
+                text += paragraphs
+                texts.append(text)
+
+        # print(links)
+
     
-    # termination condition
-    if count >= specifiedNumber:
-        # archiveAtEnd(driver, reviewList)
-        switch = False
+        # for i in links:
+        #     try:
+        #         ActionChains(driver).move_to_element(i).perform()
+        #         date = i.text
+        #         url = i.get_attribute('href')
+        #         if url in links_l:
+        #             continue
+        #         else:
+        #             links_l.append(url)
+        #     except:
+        #         pass
 
-result = zip(names,texts, links_l)
 
-# result.append(texts)
-# result.append(links_l)
 
-with open('some.csv', 'w', newline='', encoding='utf-8') as f:
-    header = ['names','text','links_l']
-    writer = csv.writer(f)
-    writer.writerow(header)
-    writer.writerows(result) 
 
-time.sleep(5)
+        # scroll to the bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(1)
+
+        # reviewList = driver.find_elements(By.XPATH, "//div[@class='du4w35lb k4urcfbm l9j0dhe7 sjgh65i0']")
+        
+        # termination condition
+        if count >= specifiedNumber:
+            # archiveAtEnd(driver, reviewList)
+            switch = False
+
+    for text in texts:
+        pos = text
+        pos1 = pos.lower()
+        for j in range(len(k_word)-1):
+            if k_word[j] not in pos1:
+                i = texts.index(text)
+                del texts[i]
+                del links_l[i]
+                del names[i]
+                del dates[i]
+                break
+        if text in texts:
+            i = texts.index(text)
+            texts[i] = texts[i][:30]
+            print(texts[i][:30])
+
+    result = zip(names,dates,texts, links_l)
+
+    # result.append(texts)
+    # result.append(links_l)
+
+    filename = keyword+".csv"
+    with open(filename, 'w', newline='', encoding='utf-8') as f:
+        header = ['names','dates','text','links_l']
+        writer = csv.writer(f)
+        writer.writerow(header)
+        writer.writerows(result) 
+
+    time.sleep(5)
 
